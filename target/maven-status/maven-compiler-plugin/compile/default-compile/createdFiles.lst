@@ -1,0 +1,15 @@
+com\example\interviewscheduler\repository\AvailabilityRepository.class
+com\example\interviewscheduler\repository\InterviewerRepository.class
+com\example\interviewscheduler\model\Interviewer.class
+com\example\interviewscheduler\model\InterviewSlot$SlotStatus.class
+com\example\interviewscheduler\controller\InterviewController.class
+com\example\interviewscheduler\model\Availability.class
+com\example\interviewscheduler\service\InterviewService.class
+com\example\interviewscheduler\repository\CandidateRepository.class
+com\example\interviewscheduler\model\InterviewSlot.class
+com\example\interviewscheduler\model\Candidate.class
+com\example\interviewscheduler\InterviewSchedulerApplication.class
+com\example\interviewscheduler\dto\BookingRequest.class
+com\example\interviewscheduler\dto\AvailabilityDto.class
+com\example\interviewscheduler\dto\RescheduleRequest.class
+com\example\interviewscheduler\repository\InterviewSlotRepository.class

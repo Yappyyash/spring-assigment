@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Scheduler - API Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .response {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .success {
+            border-left-color: #4caf50;
+        }
+
+        .error {
+            border-left-color: #f44336;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-box p {
+            margin: 5px 0;
+            color: #333;
+        }
+
+        .info-box strong {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Interview Scheduler API Tester</h1>
+
+        <div class="info-box">
+            <p><strong>Server Status:</strong> <span id="serverStatus">Checking...</span></p>
+            <p><strong>API Base URL:</strong> http://localhost:8080/api</p>
+            <p><strong>H2 Console:</strong> <a href="http://localhost:8080/h2-console" target="_blank" style="color: #667eea;">http://localhost:8080/h2-console</a></p>
+        </div>
+
+        <div class="grid">
+            <!-- Create Interviewer -->
+            <div class="card">
+                <h2>1️⃣ Create Interviewer</h2>
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input type="text" id="interviewerName" value="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="interviewerEmail" value="john@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Max Interviews Per Week:</label>
+                    <input type="number" id="maxInterviews" value="5">
+                </div>
+                <button onclick="createInterviewer()">Create Interviewer</button>
+                <div id="interviewerResponse" class="response" style="display:none;"></div>
+            </div>
+
+            <!-- Set Availability -->
+            <div class="card">
+                <h2>2️⃣ Set Availability</h2>
+                <div class="form-group">
+                    <label>Interviewer ID:</label>
+                    <input type="number" id="availInterviewerId" value="1">
+                </div>
+                <div class="form-group">
+                    <label>Day of Week:</label>
+                    <select id="dayOfWeek">
+                        <option>MONDAY</option>
+                        <option>TUESDAY</option>
+                        <option>WEDNESDAY</option>
+                        <option>THURSDAY</option>
+                        <option>FRIDAY</option>
+                        <option>SATURDAY</option>
+                        <option>SUNDAY</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Start Time:</label>
+                    <input type="time" id="startTime" value="10:00">
+                </div>
+                <div class="form-group">
+                    <label>End Time:</label>
+                    <input type="time" id="endTime" value="11:00">
+                </div>
+                <button onclick="setAvailability()">Set Availability</button>
+                <div id="availabilityResponse" class="response" style="display:none;"></div>
+            </div>
+
+            <!-- Create Candidate -->
+            <div class="card">
+                <h2>3️⃣ Create Candidate</h2>
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input type="text" id="candidateName" value="Jane Smith">
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="candidateEmail" value="jane@example.com">
+                </div>
+                <button onclick="createCandidate()">Create Candidate</button>
+                <div id="candidateResponse" class="response" style="display:none;"></div>
+            </div>
+
+            <!-- Get Available Slots -->
+            <div class="card">
+                <h2>4️⃣ View Available Slots</h2>
+                <button onclick="getAvailableSlots()">Get Available Slots</button>
+                <div id="slotsResponse" class="response" style="display:none;"></div>
+            </div>
+
+            <!-- Book Slot -->
+            <div class="card">
+                <h2>5️⃣ Book Slot</h2>
+                <div class="form-group">
+                    <label>Slot ID:</label>
+                    <input type="number" id="slotId" value="1">
+                </div>
+                <div class="form-group">
+                    <label>Candidate ID:</label>
+                    <input type="number" id="bookCandidateId" value="1">
+                </div>
+                <button onclick="bookSlot()">Book Slot</button>
+                <div id="bookResponse" class="response" style="display:none;"></div>
+            </div>
+
+            <!-- Reschedule Slot -->
+            <div class="card">
+                <h2>6️⃣ Reschedule Slot</h2>
+                <div class="form-group">
+                    <label>Old Slot ID:</label>
+                    <input type="number" id="oldSlotId" value="1">
+                </div>
+                <div class="form-group">
+                    <label>New Slot ID:</label>
+                    <input type="number" id="newSlotId" value="2">
+                </div>
+                <div class="form-group">
+                    <label>Candidate ID:</label>
+                    <input type="number" id="rescheduleCandidateId" value="1">
+                </div>
+                <button onclick="rescheduleSlot()">Reschedule Slot</button>
+                <div id="rescheduleResponse" class="response" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+
+        // Check server status
+        async function checkServer() {
+            try {
+                const response = await fetch(`${API_BASE}/slots/available`);
+                document.getElementById('serverStatus').textContent = '✅ Running';
+                document.getElementById('serverStatus').style.color = '#4caf50';
+            } catch (error) {
+                document.getElementById('serverStatus').textContent = '❌ Not Running';
+                document.getElementById('serverStatus').style.color = '#f44336';
+            }
+        }
+
+        function showResponse(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = 'response ' + (isError ? 'error' : 'success');
+            element.textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function createInterviewer() {
+            try {
+                const response = await fetch(`${API_BASE}/interviewers`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        name: document.getElementById('interviewerName').value,
+                        email: document.getElementById('interviewerEmail').value,
+                        maxInterviewsPerWeek: parseInt(document.getElementById('maxInterviews').value)
+                    })
+                });
+                const data = await response.json();
+                showResponse('interviewerResponse', data);
+            } catch (error) {
+                showResponse('interviewerResponse', {error: error.message}, true);
+            }
+        }
+
+        async function setAvailability() {
+            try {
+                const id = document.getElementById('availInterviewerId').value;
+                const response = await fetch(`${API_BASE}/interviewers/${id}/availability`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify([{
+                        dayOfWeek: document.getElementById('dayOfWeek').value,
+                        startTime: document.getElementById('startTime').value + ':00',
+                        endTime: document.getElementById('endTime').value + ':00'
+                    }])
+                });
+                showResponse('availabilityResponse', {status: 'Availability set successfully!'});
+            } catch (error) {
+                showResponse('availabilityResponse', {error: error.message}, true);
+            }
+        }
+
+        async function createCandidate() {
+            try {
+                const response = await fetch(`${API_BASE}/candidates`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        name: document.getElementById('candidateName').value,
+                        email: document.getElementById('candidateEmail').value
+                    })
+                });
+                const data = await response.json();
+                showResponse('candidateResponse', data);
+            } catch (error) {
+                showResponse('candidateResponse', {error: error.message}, true);
+            }
+        }
+
+        async function getAvailableSlots() {
+            try {
+                const response = await fetch(`${API_BASE}/slots/available`);
+                const data = await response.json();
+                showResponse('slotsResponse', data);
+            } catch (error) {
+                showResponse('slotsResponse', {error: error.message}, true);
+            }
+        }
+
+        async function bookSlot() {
+            try {
+                const slotId = document.getElementById('slotId').value;
+                const response = await fetch(`${API_BASE}/slots/${slotId}/book`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        candidateId: parseInt(document.getElementById('bookCandidateId').value)
+                    })
+                });
+                const data = await response.json();
+                showResponse('bookResponse', data);
+            } catch (error) {
+                showResponse('bookResponse', {error: error.message}, true);
+            }
+        }
+
+        async function rescheduleSlot() {
+            try {
+                const response = await fetch(`${API_BASE}/slots/reschedule`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        oldSlotId: parseInt(document.getElementById('oldSlotId').value),
+                        newSlotId: parseInt(document.getElementById('newSlotId').value),
+                        candidateId: parseInt(document.getElementById('rescheduleCandidateId').value)
+                    })
+                });
+                const data = await response.json();
+                showResponse('rescheduleResponse', data);
+            } catch (error) {
+                showResponse('rescheduleResponse', {error: error.message}, true);
+            }
+        }
+
+        // Check server on load
+        checkServer();
+        setInterval(checkServer, 5000);
+    </script>
+</body>
+</html>
