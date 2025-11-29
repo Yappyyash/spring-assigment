@@ -143,4 +143,12 @@ public class InterviewService {
         candidate.setEmail(email);
         return candidateRepository.save(candidate);
     }
+
+    public List<Interviewer> getAllInterviewers() {
+        return interviewerRepository.findAll();
+    }
+
+    public List<Candidate> getAllCandidates() {
+        return candidateRepository.findAll();
+    }
 }

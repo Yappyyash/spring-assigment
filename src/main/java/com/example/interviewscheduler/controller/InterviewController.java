@@ -28,6 +28,11 @@ public class InterviewController {
                 interviewer.getMaxInterviewsPerWeek()));
     }
 
+    @GetMapping("/interviewers")
+    public ResponseEntity<List<Interviewer>> getAllInterviewers() {
+        return ResponseEntity.ok(interviewService.getAllInterviewers());
+    }
+
     @PostMapping("/interviewers/{id}/availability")
     public ResponseEntity<Void> setAvailability(@PathVariable Long id,
             @RequestBody List<AvailabilityDto> availabilityDtos) {
@@ -51,6 +56,11 @@ public class InterviewController {
     @PostMapping("/candidates")
     public ResponseEntity<Candidate> createCandidate(@RequestBody Candidate candidate) {
         return ResponseEntity.ok(interviewService.createCandidate(candidate.getName(), candidate.getEmail()));
+    }
+
+    @GetMapping("/candidates")
+    public ResponseEntity<List<Candidate>> getAllCandidates() {
+        return ResponseEntity.ok(interviewService.getAllCandidates());
     }
 
     @PostMapping("/slots/{slotId}/book")

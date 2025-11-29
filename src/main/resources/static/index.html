@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Scheduler - Management Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            color: var(--primary);
+            font-size: 2.5em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-badge {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-badge.online {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.offline {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            background: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--primary);
+            font-size: 1.8em;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark);
+            font-size: 14px;
+        }
+
+        input,
+        select,
+        textarea {
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-info {
+            background: var(--info);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 15px;
+            font-size: 13px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid var(--success);
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid var(--danger);
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-left: 4px solid var(--info);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .modal-header h3 {
+            color: var(--primary);
+            font-size: 1.5em;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #6b7280;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: var(--danger);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2.5em;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            color: #6b7280;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>
+                🎯 Interview Scheduler
+            </h1>
+            <div class="status-badge online" id="serverStatus">
+                <span class="status-dot"></span>
+                <span>Server Online</span>
+            </div>
+        </header>
+
+        <!-- Statistics Dashboard -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3 id="totalInterviewers">0</h3>
+                <p>Interviewers</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalCandidates">0</h3>
+                <p>Candidates</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalSlots">0</h3>
+                <p>Total Slots</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="availableSlots">0</h3>
+                <p>Available Slots</p>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('interviewers')">👨‍💼 Interviewers</button>
+            <button class="tab" onclick="switchTab('candidates')">👥 Candidates</button>
+            <button class="tab" onclick="switchTab('availability')">📅 Availability</button>
+            <button class="tab" onclick="switchTab('slots')">🎫 Interview Slots</button>
+            <button class="tab" onclick="switchTab('bookings')">📝 Bookings</button>
+        </div>
+
+        <!-- Alert Container -->
+        <div id="alertContainer"></div>
+
+        <!-- Interviewers Tab -->
+        <div id="interviewers" class="tab-content active">
+            <div class="card">
+                <h2>Manage Interviewers</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Name *</label>
+                        <input type="text" id="interviewerName" placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="interviewerEmail" placeholder="john@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Max Interviews Per Week *</label>
+                        <input type="number" id="maxInterviews" placeholder="5" min="1">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="createInterviewer()">
+                    ➕ Add Interviewer
+                </button>
+            </div>
+
+            <div class="card">
+                <h2>All Interviewers</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Max Interviews/Week</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="interviewersTable">
+                            <tr>
+                                <td colspan="5" class="empty-state">
+                                    <p>No interviewers found. Add one above!</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Candidates Tab -->
+        <div id="candidates" class="tab-content">
+            <div class="card">
+                <h2>Manage Candidates</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Name *</label>
+                        <input type="text" id="candidateName" placeholder="Jane Smith">
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="candidateEmail" placeholder="jane@example.com">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="createCandidate()">
+                    ➕ Add Candidate
+                </button>
+            </div>
+
+            <div class="card">
+                <h2>All Candidates</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="candidatesTable">
+                            <tr>
+                                <td colspan="4" class="empty-state">
+                                    <p>No candidates found. Add one above!</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Availability Tab -->
+        <div id="availability" class="tab-content">
+            <div class="card">
+                <h2>Set Interviewer Availability</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Select Interviewer *</label>
+                        <select id="availInterviewerId">
+                            <option value="">-- Select Interviewer --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Day of Week *</label>
+                        <select id="dayOfWeek">
+                            <option value="MONDAY">Monday</option>
+                            <option value="TUESDAY">Tuesday</option>
+                            <option value="WEDNESDAY">Wednesday</option>
+                            <option value="THURSDAY">Thursday</option>
+                            <option value="FRIDAY">Friday</option>
+                            <option value="SATURDAY">Saturday</option>
+                            <option value="SUNDAY">Sunday</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Start Time *</label>
+                        <input type="time" id="startTime" value="10:00">
+                    </div>
+                    <div class="form-group">
+                        <label>End Time *</label>
+                        <input type="time" id="endTime" value="11:00">
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="setAvailability()">
+                    📅 Set Availability & Generate Slots
+                </button>
+            </div>
+
+            <div class="card">
+                <h2>ℹ️ How It Works</h2>
+                <div class="alert alert-info">
+                    <span>💡</span>
+                    <div>
+                        <strong>Automatic Slot Generation:</strong> When you set availability for an interviewer,
+                        the system automatically generates interview slots for the next 2 weeks based on the
+                        specified day and time. These slots will appear in the "Interview Slots" tab.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slots Tab -->
+        <div id="slots" class="tab-content">
+            <div class="card">
+                <h2>All Interview Slots</h2>
+                <button class="btn btn-info" onclick="loadSlots()" style="margin-bottom: 15px;">
+                    🔄 Refresh Slots
+                </button>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Interviewer</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Candidate</th>
+                            </tr>
+                        </thead>
+                        <tbody id="slotsTable">
+                            <tr>
+                                <td colspan="6" class="empty-state">
+                                    <p>No slots found. Set interviewer availability to generate slots!</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookings Tab -->
+        <div id="bookings" class="tab-content">
+            <div class="card">
+                <h2>Book Interview Slot</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Select Candidate *</label>
+                        <select id="bookCandidateId">
+                            <option value="">-- Select Candidate --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Available Slot *</label>
+                        <select id="bookSlotId">
+                            <option value="">-- Select Slot --</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="bookSlot()">
+                    ✅ Book Slot
+                </button>
+            </div>
+
+            <div class="card">
+                <h2>Reschedule Interview</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Select Candidate *</label>
+                        <select id="rescheduleCandidateId">
+                            <option value="">-- Select Candidate --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Current Slot ID *</label>
+                        <input type="number" id="oldSlotId" placeholder="Enter current slot ID">
+                    </div>
+                    <div class="form-group">
+                        <label>New Slot *</label>
+                        <select id="newSlotId">
+                            <option value="">-- Select New Slot --</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-warning" onclick="rescheduleSlot()">
+                    🔄 Reschedule
+                </button>
+            </div>
+
+            <div class="card">
+                <h2>Booked Interviews</h2>
+                <button class="btn btn-info" onclick="loadBookedSlots()" style="margin-bottom: 15px;">
+                    🔄 Refresh
+                </button>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Slot ID</th>
+                                <th>Candidate</th>
+                                <th>Interviewer</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookedSlotsTable">
+                            <tr>
+                                <td colspan="6" class="empty-state">
+                                    <p>No bookings yet!</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+        let interviewers = [];
+        let candidates = [];
+        let allSlots = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkServerStatus();
+            loadAllData();
+            setInterval(checkServerStatus, 5000);
+        });
+
+        // Tab Switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+
+            if (tabName === 'slots') loadSlots();
+            if (tabName === 'bookings') {
+                loadBookedSlots();
+                populateDropdowns();
+            }
+        }
+
+        // Server Status Check
+        async function checkServerStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/slots/available`);
+                const statusBadge = document.getElementById('serverStatus');
+                if (response.ok) {
+                    statusBadge.className = 'status-badge online';
+                    statusBadge.innerHTML = '<span class="status-dot"></span><span>Server Online</span>';
+                } else {
+                    throw new Error('Server error');
+                }
+            } catch (error) {
+                const statusBadge = document.getElementById('serverStatus');
+                statusBadge.className = 'status-badge offline';
+                statusBadge.innerHTML = '<span class="status-dot"></span><span>Server Offline</span>';
+            }
+        }
+
+        // Load All Data
+        async function loadAllData() {
+            await loadInterviewers();
+            await loadCandidates();
+            await loadSlots();
+            updateStats();
+        }
+
+        // Show Alert
+        function showAlert(message, type = 'success') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+                <span>${message}</span>
+            `;
+            alertContainer.appendChild(alert);
+
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Update Statistics
+        function updateStats() {
+            document.getElementById('totalInterviewers').textContent = interviewers.length;
+            document.getElementById('totalCandidates').textContent = candidates.length;
+            document.getElementById('totalSlots').textContent = allSlots.length;
+            document.getElementById('availableSlots').textContent =
+                allSlots.filter(s => s.status === 'AVAILABLE').length;
+        }
+
+        // INTERVIEWER CRUD
+        async function createInterviewer() {
+            const name = document.getElementById('interviewerName').value;
+            const email = document.getElementById('interviewerEmail').value;
+            const maxInterviews = document.getElementById('maxInterviews').value;
+
+            if (!name || !email || !maxInterviews) {
+                showAlert('Please fill all fields!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/interviewers`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        maxInterviewsPerWeek: parseInt(maxInterviews)
+                    })
+                });
+
+                if (response.ok) {
+                    showAlert('Interviewer created successfully!');
+                    document.getElementById('interviewerName').value = '';
+                    document.getElementById('interviewerEmail').value = '';
+                    document.getElementById('maxInterviews').value = '';
+                    loadInterviewers();
+                } else {
+                    throw new Error('Failed to create interviewer');
+                }
+            } catch (error) {
+                showAlert('Error creating interviewer: ' + error.message, 'error');
+            }
+        }
+
+        async function loadInterviewers() {
+            try {
+                const response = await fetch(`${API_BASE}/interviewers`);
+                if (!response.ok) {
+                    interviewers = [];
+                    return;
+                }
+                interviewers = await response.json();
+
+                const tbody = document.getElementById('interviewersTable');
+                if (interviewers.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><p>No interviewers found. Add one above!</p></td></tr>';
+                } else {
+                    tbody.innerHTML = interviewers.map(i => `
+                        <tr>
+                            <td>${i.id}</td>
+                            <td>${i.name}</td>
+                            <td>${i.email}</td>
+                            <td>${i.maxInterviewsPerWeek}</td>
+                            <td>
+                                <button class="btn btn-danger btn-sm" onclick="deleteInterviewer(${i.id})">
+                                    🗑️ Delete
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+
+                // Update availability dropdown
+                const select = document.getElementById('availInterviewerId');
+                select.innerHTML = '<option value="">-- Select Interviewer --</option>' +
+                    interviewers.map(i => `<option value="${i.id}">${i.name} (${i.email})</option>`).join('');
+
+                updateStats();
+            } catch (error) {
+                console.error('Error loading interviewers:', error);
+            }
+        }
+
+        async function deleteInterviewer(id) {
+            if (!confirm('Are you sure you want to delete this interviewer?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/interviewers/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    showAlert('Interviewer deleted successfully!');
+                    loadInterviewers();
+                } else {
+                    throw new Error('Failed to delete');
+                }
+            } catch (error) {
+                showAlert('Error deleting interviewer: ' + error.message, 'error');
+            }
+        }
+
+        // CANDIDATE CRUD
+        async function createCandidate() {
+            const name = document.getElementById('candidateName').value;
+            const email = document.getElementById('candidateEmail').value;
+
+            if (!name || !email) {
+                showAlert('Please fill all fields!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/candidates`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email })
+                });
+
+                if (response.ok) {
+                    showAlert('Candidate created successfully!');
+                    document.getElementById('candidateName').value = '';
+                    document.getElementById('candidateEmail').value = '';
+                    loadCandidates();
+                } else {
+                    throw new Error('Failed to create candidate');
+                }
+            } catch (error) {
+                showAlert('Error creating candidate: ' + error.message, 'error');
+            }
+        }
+
+        async function loadCandidates() {
+            try {
+                const response = await fetch(`${API_BASE}/candidates`);
+                if (!response.ok) {
+                    candidates = [];
+                    return;
+                }
+                candidates = await response.json();
+
+                const tbody = document.getElementById('candidatesTable');
+                if (candidates.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="empty-state"><p>No candidates found. Add one above!</p></td></tr>';
+                } else {
+                    tbody.innerHTML = candidates.map(c => `
+                        <tr>
+                            <td>${c.id}</td>
+                            <td>${c.name}</td>
+                            <td>${c.email}</td>
+                            <td>
+                                <button class="btn btn-danger btn-sm" onclick="deleteCandidate(${c.id})">
+                                    🗑️ Delete
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+
+                updateStats();
+            } catch (error) {
+                console.error('Error loading candidates:', error);
+            }
+        }
+
+        async function deleteCandidate(id) {
+            if (!confirm('Are you sure you want to delete this candidate?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/candidates/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    showAlert('Candidate deleted successfully!');
+                    loadCandidates();
+                } else {
+                    throw new Error('Failed to delete');
+                }
+            } catch (error) {
+                showAlert('Error deleting candidate: ' + error.message, 'error');
+            }
+        }
+
+        // AVAILABILITY
+        async function setAvailability() {
+            const interviewerId = document.getElementById('availInterviewerId').value;
+            const dayOfWeek = document.getElementById('dayOfWeek').value;
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+
+            if (!interviewerId || !dayOfWeek || !startTime || !endTime) {
+                showAlert('Please fill all fields!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/interviewers/${interviewerId}/availability`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify([{
+                        dayOfWeek,
+                        startTime: startTime + ':00',
+                        endTime: endTime + ':00'
+                    }])
+                });
+
+                if (response.ok) {
+                    showAlert('Availability set and slots generated for next 2 weeks!');
+                    loadSlots();
+                } else {
+                    throw new Error('Failed to set availability');
+                }
+            } catch (error) {
+                showAlert('Error setting availability: ' + error.message, 'error');
+            }
+        }
+
+        // SLOTS
+        async function loadSlots() {
+            try {
+                const response = await fetch(`${API_BASE}/slots/available`);
+                if (!response.ok) {
+                    allSlots = [];
+                    return;
+                }
+                allSlots = await response.json();
+
+                const tbody = document.getElementById('slotsTable');
+                if (allSlots.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><p>No slots found. Set interviewer availability to generate slots!</p></td></tr>';
+                } else {
+                    tbody.innerHTML = allSlots.map(s => `
+                        <tr>
+                            <td>${s.id}</td>
+                            <td>${s.interviewer ? s.interviewer.name : 'N/A'}</td>
+                            <td>${s.date}</td>
+                            <td>${s.startTime} - ${s.endTime}</td>
+                            <td>
+                                <span class="badge badge-${s.status === 'AVAILABLE' ? 'success' : 'danger'}">
+                                    ${s.status}
+                                </span>
+                            </td>
+                            <td>${s.candidate ? s.candidate.name : '-'}</td>
+                        </tr>
+                    `).join('');
+                }
+
+                populateDropdowns();
+                updateStats();
+            } catch (error) {
+                console.error('Error loading slots:', error);
+            }
+        }
+
+        function populateDropdowns() {
+            // Populate candidate dropdowns
+            const candidateSelects = ['bookCandidateId', 'rescheduleCandidateId'];
+            candidateSelects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                select.innerHTML = '<option value="">-- Select Candidate --</option>' +
+                    candidates.map(c => `<option value="${c.id}">${c.name} (${c.email})</option>`).join('');
+            });
+
+            // Populate available slots dropdown
+            const availableSlots = allSlots.filter(s => s.status === 'AVAILABLE');
+            const slotSelects = ['bookSlotId', 'newSlotId'];
+            slotSelects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                select.innerHTML = '<option value="">-- Select Slot --</option>' +
+                    availableSlots.map(s =>
+                        `<option value="${s.id}">ID: ${s.id} - ${s.interviewer.name} - ${s.date} ${s.startTime}</option>`
+                    ).join('');
+            });
+        }
+
+        // BOOKING
+        async function bookSlot() {
+            const slotId = document.getElementById('bookSlotId').value;
+            const candidateId = document.getElementById('bookCandidateId').value;
+
+            if (!slotId || !candidateId) {
+                showAlert('Please select both slot and candidate!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/slots/${slotId}/book`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ candidateId: parseInt(candidateId) })
+                });
+
+                if (response.ok) {
+                    showAlert('Slot booked successfully!');
+                    loadSlots();
+                    loadBookedSlots();
+                } else {
+                    const error = await response.text();
+                    throw new Error(error || 'Failed to book slot');
+                }
+            } catch (error) {
+                showAlert('Error booking slot: ' + error.message, 'error');
+            }
+        }
+
+        async function rescheduleSlot() {
+            const oldSlotId = document.getElementById('oldSlotId').value;
+            const newSlotId = document.getElementById('newSlotId').value;
+            const candidateId = document.getElementById('rescheduleCandidateId').value;
+
+            if (!oldSlotId || !newSlotId || !candidateId) {
+                showAlert('Please fill all fields!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/slots/reschedule`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        oldSlotId: parseInt(oldSlotId),
+                        newSlotId: parseInt(newSlotId),
+                        candidateId: parseInt(candidateId)
+                    })
+                });
+
+                if (response.ok) {
+                    showAlert('Slot rescheduled successfully!');
+                    document.getElementById('oldSlotId').value = '';
+                    loadSlots();
+                    loadBookedSlots();
+                } else {
+                    const error = await response.text();
+                    throw new Error(error || 'Failed to reschedule');
+                }
+            } catch (error) {
+                showAlert('Error rescheduling: ' + error.message, 'error');
+            }
+        }
+
+        async function loadBookedSlots() {
+            const bookedSlots = allSlots.filter(s => s.status === 'BOOKED');
+            const tbody = document.getElementById('bookedSlotsTable');
+
+            if (bookedSlots.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><p>No bookings yet!</p></td></tr>';
+            } else {
+                tbody.innerHTML = bookedSlots.map(s => `
+                    <tr>
+                        <td>${s.id}</td>
+                        <td>${s.candidate ? s.candidate.name : 'N/A'}</td>
+                        <td>${s.interviewer ? s.interviewer.name : 'N/A'}</td>
+                        <td>${s.date}</td>
+                        <td>${s.startTime} - ${s.endTime}</td>
+                        <td>
+                            <button class="btn btn-info btn-sm" onclick="prepareReschedule(${s.id}, ${s.candidate ? s.candidate.id : 0})">
+                                🔄 Reschedule
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function prepareReschedule(slotId, candidateId) {
+            switchTab('bookings');
+            document.getElementById('oldSlotId').value = slotId;
+            document.getElementById('rescheduleCandidateId').value = candidateId;
+            document.querySelector('#bookings').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+
+</html>
